@@ -1,8 +1,8 @@
 <template>
   <div class="login-form">
     <el-row>
-      <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="120px" class="login-form--vertical">
-        <el-form-item label="Email" prop="name">
+      <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="120px" class="login-form--vertical" label-position="top">
+        <el-form-item label="Email" prop="email">
           <el-input
             v-model="loginForm.email"
             placeholder="your.email@example.com"
@@ -21,17 +21,11 @@
       <el-button @click="resetForm('loginForm')">Reset</el-button>
       <el-button type="primary" @click="submitForm('loginForm')">Login</el-button>
     </el-row>
-    <el-row>
-      <el-col :span="12">
-        <a href="/auth/forgot-password">Forgot Password?</a>
-      </el-col>
-      <el-col :span="12">
-        <a href="">New User? SignUp</a>
-      </el-col>
-    </el-row>
   </div>
 </template>
 <script>
+import { isEmail } from '@/services/validators'
+
 export default {
   data () {
     return {
@@ -40,7 +34,16 @@ export default {
         password: ''
       },
       rules: {
-        name: [
+        email: [
+          {
+            validator (rule, value, callback) {
+              if (!isEmail(value)) return callback(new Error(rule.message))
+              callback()
+            },
+            required: true,
+            message: 'Please provide a valid email address',
+            trigger: 'change'
+          },
           { required: true, message: 'Please enter your email address', trigger: 'blur' }
         ],
         password: [
@@ -53,9 +56,9 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          // alert('submit!')
         } else {
-          console.log('error submit!!')
+          // console.log('error submit!!')
           return false
         }
       })
@@ -67,7 +70,8 @@ export default {
 }
 </script>
 <style>
-  .login-form {
-    padding: 20px;
+  .el-form-item__label {
+    font-weight: bold;
+    line-height: 1.4 !important;
   }
 </style>
